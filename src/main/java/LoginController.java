@@ -36,12 +36,12 @@ public class LoginController {
 
     public static DBUtil dbUtil;
     public static StringBuilder consoleText=new StringBuilder();
-    private RacketDAO racketDAO;
+    private PackageDAO racketDAO;
 
     @FXML
     void connectButtonPressed(ActionEvent event) throws SQLException, ClassNotFoundException, IOException, InterruptedException {
         dbUtil = new DBUtil(userTextField.getText(), passwordTextField.getText(), consoleTextArea);
-        racketDAO = new RacketDAO(dbUtil, consoleTextArea);
+        racketDAO = new PackageDAO(dbUtil, consoleTextArea);
 
         dbUtil.dbConnect();
 

@@ -1,6 +1,4 @@
 //import com.sun.rowset.CachedRowSetImpl;
-import com.sun.rowset.CachedRowSetImpl;
-
 import javax.sql.rowset.*;
 
 import javax.sql.RowSet;
@@ -52,11 +50,11 @@ public class CachedRowSetWrapper implements CachedRowSet, Serializable {
     public CachedRowSetWrapper() throws SQLException {
         String javaVersion = System.getProperty("java.version");
 
-        if (javaVersion != null && javaVersion.startsWith("1.6.")) {
-            internalRowSet = new CachedRowSetImpl();
-        } else {
+//        if (javaVersion != null && javaVersion.startsWith("1.6.")) {
+//            internalRowSet = new CachedRowSetImpl();
+//        } else {
             internalRowSet = RowSetProvider.newFactory().createCachedRowSet();
-        }
+//        }
     }
 
     @Override
