@@ -46,6 +46,9 @@ public class UserController {
     private TableColumn<Package, Integer> idCol;
 
     @FXML
+    private TableColumn<Package, String> rozmiarCol;
+
+    @FXML
     private TableColumn<Package, String> stanCol;
 
     @FXML
@@ -65,6 +68,12 @@ public class UserController {
 
     @FXML
     private TableColumn<Package, String> krajCol;
+
+    @FXML
+    private TableColumn<Package, String> nadawcaCol;
+
+    @FXML
+    private TableColumn<Package, String> odbiorcaCol;
 
     @FXML
     private TextArea consoleTextArea;
@@ -118,6 +127,7 @@ public class UserController {
         assert comboBox2 != null : "fx:id=\"comboBox2\" was not injected: check your FXML file 'user.fxml'.";
         assert ordersTable != null : "fx:id=\"ordersTable\" was not injected: check your FXML file 'user.fxml'.";
         assert idCol != null : "fx:id=\"idCol\" was not injected: check your FXML file 'user.fxml'.";
+        assert rozmiarCol != null : "fx:id=\"idCol\" was not injected: check your FXML file 'user.fxml'.";
         assert stanCol != null : "fx:id=\"stanCol\" was not injected: check your FXML file 'user.fxml'.";
         assert dataNadaniaCol != null : "fx:id=\"dataNadaniaCol\" was not injected: check your FXML file 'user.fxml'.";
         assert dataOdbioruCol != null : "fx:id=\"dataOdbioruCol\" was not injected: check your FXML file 'user.fxml'.";
@@ -125,6 +135,8 @@ public class UserController {
         assert nrCol != null : "fx:id=\"nrCol\" was not injected: check your FXML file 'user.fxml'.";
         assert miastoCol != null : "fx:id=\"miastoCol\" was not injected: check your FXML file 'user.fxml'.";
         assert krajCol != null : "fx:id=\"krajCol\" was not injected: check your FXML file 'user.fxml'.";
+        assert nadawcaCol != null : "fx:id=\"nadawcaCol\" was not injected: check your FXML file 'user.fxml'.";
+        assert odbiorcaCol != null : "fx:id=\"odbiorcaCol\" was not injected: check your FXML file 'user.fxml'.";
         assert consoleTextArea != null : "fx:id=\"consoleTextArea\" was not injected: check your FXML file 'user.fxml'.";
         assert disconnectButton != null : "fx:id=\"disconnectButton\" was not injected: check your FXML file 'user.fxml'.";
         assert showAllButton != null : "fx:id=\"showAllButton\" was not injected: check your FXML file 'user.fxml'.";

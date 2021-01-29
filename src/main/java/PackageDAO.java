@@ -30,6 +30,8 @@ public class PackageDAO {
             r.setNr(rs.getInt("nr"));
             r.setMiasto(rs.getString("miasto"));
             r.setKraj(rs.getString("kraj"));
+            r.setNadawca(rs.getString("nadawca"));
+            r.setOdbiorca(rs.getString("odbiorca"));
             PackageList.add(r);
         }
 
@@ -67,7 +69,7 @@ public class PackageDAO {
             ResultSet resultSet = dbUtil.dbExecuteQuery(selectStmt);
 
             ObservableList<Package> PackageList = getPackageList(resultSet);
-            consoleTextArea.appendText(selectStmt);
+            consoleTextArea.appendText(selectStmt+"\n");
 
             return PackageList;
 

@@ -13,6 +13,8 @@ public class Package {
     private IntegerProperty nr;
     private StringProperty miasto;
     private StringProperty kraj;
+    private StringProperty nadawca;
+    private StringProperty odbiorca;
 
 
     public Package() {
@@ -25,6 +27,8 @@ public class Package {
         nr=new SimpleIntegerProperty();
         miasto=new SimpleStringProperty();
         kraj=new SimpleStringProperty();
+        nadawca=new SimpleStringProperty();
+        odbiorca=new SimpleStringProperty();
 
     }
 
@@ -137,5 +141,27 @@ public class Package {
 
     public void setKraj(String kraj) {
         this.kraj.set(kraj);
+    }
+    public String getNadawca() {
+        return kraj.get();
+    }
+
+    public StringProperty nadawcaProperty() {
+        return nadawca;
+    }
+
+    public void setNadawca(String nadawca) {
+        this.nadawca.set(nadawca);
+    }
+    public String getOdbiorca() {
+        return odbiorca.get();
+    }
+
+    public StringProperty odbiorcaProperty() {
+        return odbiorca;
+    }
+
+    public void setOdbiorca(String odbiorca) {
+        this.odbiorca.set(odbiorca);
     }
 }
