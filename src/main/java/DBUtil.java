@@ -48,7 +48,6 @@ public class DBUtil {
             if (conn != null && !conn.isClosed()) {
 
                 conn.close();
-                consoleTextArea.appendText("Connection closed. Bye!" + "\n");
 
             }
         } catch (Exception e) {

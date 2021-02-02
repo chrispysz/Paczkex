@@ -1,9 +1,11 @@
 import java.io.IOException;
 import java.net.URL;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ResourceBundle;
 import java.util.concurrent.TimeUnit;
 
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
@@ -60,14 +62,51 @@ public class LoginController {
     private PackageDAO racketDAO;
 
     @FXML
-    void confirmRegistrationPressed(ActionEvent event) {
+    void confirmRegistrationPressed(ActionEvent event) throws SQLException, ClassNotFoundException {
+
+
+        try {
+            String selectStmt = "insert into klienci (imie, nazwisko, email, telefon) VALUES\n" +
+                    " ('"+registerNameTextField.getText()+"','"+registerSurnameTextField.getText()+"','"+registerEmailTextField.getText()+"','"+registerPhoneNumberTextField.getText()+"');";
+            dbUtil.dbExecuteUpdate(selectStmt);
+
+            selectStmt="CREATE USER '"+registerPhoneNumberTextField.getText()+"'@'localhost' IDENTIFIED BY '"+registerPasswordTextField.getText()+"';";
+            dbUtil.dbExecuteUpdate(selectStmt);
+
+            selectStmt="GRANT select on paczkex.zlecenia TO '"+registerPhoneNumberTextField.getText()+"'@'localhost';";
+            dbUtil.dbExecuteUpdate(selectStmt);
+
+            selectStmt="GRANT EXECUTE ON PROCEDURE paczkex.nadanie TO '"+registerPhoneNumberTextField.getText()+"'@'localhost';";
+            dbUtil.dbExecuteUpdate(selectStmt);
+
+            selectStmt="GRANT EXECUTE ON PROCEDURE paczkex.odbior TO '"+registerPhoneNumberTextField.getText()+"'@'localhost';";
+            dbUtil.dbExecuteUpdate(selectStmt);
+
+            consoleTextArea.appendText("User created successfully!");
+
+            consoleTextArea.appendText("Connection closed. Bye!" + "\n");
+
+        } catch (SQLException | ClassNotFoundException e) {
+            consoleTextArea.appendText("While creating user an error occured. \n");
+            throw e;
+        }
+
+
         registerButton.setDisable(false);
         registerPane.setVisible(false);
+        connectButton.setDisable(false);
+
     }
 
     @FXML
-    void registerButtonPressed(ActionEvent event) {
+    void registerButtonPressed(ActionEvent event) throws SQLException, ClassNotFoundException {
+        dbUtil = new DBUtil("default_login_user", "1234", consoleTextArea);
+        dbUtil.dbConnect();
 
+        consoleText.append("You can register!").append("\n");
+        consoleTextArea.setText(consoleText.toString());
+
+        connectButton.setDisable(true);
         registerButton.setDisable(true);
         registerPane.setVisible(true);
 
