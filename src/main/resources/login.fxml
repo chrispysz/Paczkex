@@ -1,36 +1,81 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.PasswordField?>
 <?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
-<?import javafx.scene.image.Image?>
-<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
 
-<SplitPane dividerPositions="0.5" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="414.0" prefWidth="787.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="LoginController">
+<SplitPane dividerPositions="0.3" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="LoginController">
     <items>
-        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="413.0" prefWidth="329.0">
+        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="413.0" prefWidth="253.0">
             <children>
-                <VBox layoutX="1.0" layoutY="9.0" prefHeight="391.0" spacing="15.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="17.0">
+                <VBox layoutX="1.0" layoutY="9.0" prefHeight="577.0" prefWidth="220.0" spacing="15.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="6.0">
                     <children>
-                        <Label text="Użytkownik:" />
-                        <TextField fx:id="userTextField" promptText="Podaj nazwę" />
+                        <Label text="Użytkownik (numer telefonu):" />
+                  <PasswordField fx:id="userTextField" promptText="Podaj login" />
                         <Label text="Hasło:" />
                         <PasswordField fx:id="passwordTextField" promptText="Podaj hasło" />
-                        <Button fx:id="connectButton" mnemonicParsing="false" onAction="#connectButtonPressed" text="POŁĄCZ" />
-                        <TextArea fx:id="consoleTextArea" editable="false" prefHeight="200.0" prefWidth="200.0" wrapText="true" />
+                  <Button fx:id="connectButton" mnemonicParsing="false" onAction="#connectButtonPressed" prefHeight="26.0" prefWidth="88.0" text="POŁĄCZ" />
+                        <Button fx:id="registerButton" mnemonicParsing="false" onAction="#registerButtonPressed" prefWidth="88.0" text="REJESTRACJA" />
+                        <TextArea fx:id="consoleTextArea" editable="false" prefHeight="200.0" prefWidth="200.0" wrapText="true">
+                     <VBox.margin>
+                        <Insets top="145.0" />
+                     </VBox.margin></TextArea>
                     </children>
                 </VBox>
             </children>
         </AnchorPane>
-      <ImageView fitHeight="410.0" fitWidth="557.0" pickOnBounds="true" preserveRatio="true">
-         <image>
-            <Image url="@happy.jpg" />
-         </image>
-      </ImageView>
+      <AnchorPane fx:id="registerPane" prefHeight="200.0" prefWidth="200.0" visible="false">
+         <children>
+            <Text layoutX="216.0" layoutY="40.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Rejestracja">
+               <font>
+                  <Font size="24.0" />
+               </font>
+            </Text>
+            <VBox layoutX="44.0" layoutY="199.0" prefHeight="200.0" prefWidth="243.0">
+               <children>
+                  <HBox alignment="CENTER_RIGHT" prefHeight="100.0" prefWidth="200.0">
+                     <children>
+                        <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Imię: " />
+                              <TextField fx:id="registerNameTextField" />
+                     </children>
+                  </HBox>
+                  <HBox alignment="CENTER_RIGHT" prefHeight="100.0" prefWidth="200.0">
+                     <children>
+                        <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Nazwisko:  " />
+                        <TextField fx:id="registerSurnameTextField" />
+                     </children>
+                  </HBox>
+                  <HBox alignment="CENTER_RIGHT" prefHeight="100.0" prefWidth="200.0">
+                     <children>
+                        <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Email: " />
+                        <TextField fx:id="registerEmailTextField" />
+                     </children>
+                  </HBox>
+                  <HBox alignment="CENTER_RIGHT" prefHeight="100.0" prefWidth="200.0">
+                     <children>
+                        <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Numer telefonu: " />
+                        <TextField fx:id="registerPhoneNumberTextField" />
+                     </children>
+                  </HBox>
+                  <HBox alignment="CENTER_RIGHT" prefHeight="100.0" prefWidth="200.0">
+                     <children>
+                        <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Hasło: " />
+                        <TextField fx:id="registerPasswordTextField" />
+                     </children>
+                  </HBox>
+               </children>
+            </VBox>
+            <Button fx:id="confirmRegistrationButton" layoutX="329.0" layoutY="286.0" mnemonicParsing="false" onAction="#confirmRegistrationPressed" text="ZAREJESTRUJ SIĘ!" />
+         </children>
+      </AnchorPane>
     </items>
 </SplitPane>

@@ -12,18 +12,15 @@ import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 
 public class LoginController {
 
-    @FXML
-    private ResourceBundle resources;
+
 
     @FXML
-    private URL location;
-
-    @FXML
-    private TextField userTextField;
+    private PasswordField userTextField;
 
     @FXML
     private PasswordField passwordTextField;
@@ -32,11 +29,49 @@ public class LoginController {
     private Button connectButton;
 
     @FXML
+    private Button registerButton;
+
+    @FXML
     private TextArea consoleTextArea;
+
+    @FXML
+    private AnchorPane registerPane;
+
+    @FXML
+    private TextField registerNameTextField;
+
+    @FXML
+    private TextField registerSurnameTextField;
+
+    @FXML
+    private TextField registerEmailTextField;
+
+    @FXML
+    private TextField registerPhoneNumberTextField;
+
+    @FXML
+    private TextField registerPasswordTextField;
+
+    @FXML
+    private Button confirmRegistrationButton;
 
     public static DBUtil dbUtil;
     public static StringBuilder consoleText=new StringBuilder();
     private PackageDAO racketDAO;
+
+    @FXML
+    void confirmRegistrationPressed(ActionEvent event) {
+        registerButton.setDisable(false);
+        registerPane.setVisible(false);
+    }
+
+    @FXML
+    void registerButtonPressed(ActionEvent event) {
+
+        registerButton.setDisable(true);
+        registerPane.setVisible(true);
+
+    }
 
     @FXML
     void connectButtonPressed(ActionEvent event) throws SQLException, ClassNotFoundException, IOException, InterruptedException {
@@ -59,7 +94,15 @@ public class LoginController {
         assert userTextField != null : "fx:id=\"userTextField\" was not injected: check your FXML file 'login.fxml'.";
         assert passwordTextField != null : "fx:id=\"passwordTextField\" was not injected: check your FXML file 'login.fxml'.";
         assert connectButton != null : "fx:id=\"connectButton\" was not injected: check your FXML file 'login.fxml'.";
+        assert registerButton != null : "fx:id=\"registerButton\" was not injected: check your FXML file 'login.fxml'.";
         assert consoleTextArea != null : "fx:id=\"consoleTextArea\" was not injected: check your FXML file 'login.fxml'.";
+        assert registerPane != null : "fx:id=\"registerPane\" was not injected: check your FXML file 'login.fxml'.";
+        assert registerNameTextField != null : "fx:id=\"registerNameTextField\" was not injected: check your FXML file 'login.fxml'.";
+        assert registerSurnameTextField != null : "fx:id=\"registerSurnameTextField\" was not injected: check your FXML file 'login.fxml'.";
+        assert registerEmailTextField != null : "fx:id=\"registerEmailTextField\" was not injected: check your FXML file 'login.fxml'.";
+        assert registerPhoneNumberTextField != null : "fx:id=\"registerPhoneNumberTextField\" was not injected: check your FXML file 'login.fxml'.";
+        assert registerPasswordTextField != null : "fx:id=\"registerPasswordTextField\" was not injected: check your FXML file 'login.fxml'.";
+        assert confirmRegistrationButton != null : "fx:id=\"confirmRegistrationButton\" was not injected: check your FXML file 'login.fxml'.";
 
     }
 }

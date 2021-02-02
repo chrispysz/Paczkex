@@ -17,6 +17,10 @@ public class DBUtil {
         this.consoleTextArea = consoleTextArea;
     }
 
+    public String getUserName() {
+        return userName;
+    }
+
     public void dbConnect() throws SQLException, ClassNotFoundException {
 
         try {
