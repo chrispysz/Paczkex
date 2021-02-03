@@ -66,7 +66,7 @@ public class LoginController {
 
 
         try {
-            String selectStmt = "insert into klienci (imie, nazwisko, email, telefon) VALUES\n" +
+            String selectStmt = "insert into klienci (imie, nazwisko, email, id_klienta) VALUES\n" +
                     " ('"+registerNameTextField.getText()+"','"+registerSurnameTextField.getText()+"','"+registerEmailTextField.getText()+"','"+registerPhoneNumberTextField.getText()+"');";
             dbUtil.dbExecuteUpdate(selectStmt);
 
