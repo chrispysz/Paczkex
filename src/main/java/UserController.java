@@ -1,6 +1,8 @@
 import java.io.IOException;
 import java.net.URL;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.ResourceBundle;
 
 import javafx.collections.ObservableList;
@@ -14,7 +16,10 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
+
+import javax.sql.rowset.CachedRowSet;
 
 public class UserController {
 
@@ -76,6 +81,12 @@ public class UserController {
     private TableColumn<Package, String> odbiorcaCol;
 
     @FXML
+    private AnchorPane sendPane;
+
+    @FXML
+    private AnchorPane statPane;
+
+    @FXML
     private TextArea consoleTextArea;
 
     @FXML
@@ -84,8 +95,24 @@ public class UserController {
     @FXML
     private Button showAllButton;
 
+    @FXML
+    private TextField leftTextField1;
+
+    @FXML
+    private TextField rightTextField1;
+
+    @FXML
+    private Button processButton1;
+
+    @FXML
+    private ComboBox<?> comboBox11;
+
+    @FXML
+    private TextArea txtResult;
+
     private DBUtil dbUtil;
     private PackageDAO racketDAO;
+    private boolean isAdmin=false;
 
     @FXML
     void disconnectButtonPressed(ActionEvent event) throws IOException, SQLException {
@@ -98,6 +125,50 @@ public class UserController {
     @FXML
     void onProcessClick(ActionEvent event) {
 
+    }
+
+    @FXML
+    void onProcess1Click(ActionEvent event) throws SQLException, ClassNotFoundException {
+
+        String data=leftTextField1.getText();
+
+if(rightTextField1.getText().equals("")){
+    //UTARG W DANYM DNIU
+
+
+    ResultSet rs= dbUtil.dbExecuteQuery("select utarg('"+data+"') as utarg;");
+
+    StringBuilder utarg = new StringBuilder();
+
+    while (rs.next()) {
+
+        Float n = rs.getFloat("utarg");
+        utarg.append(n);
+
+    }
+
+    txtResult.setText(utarg.toString()+"zł");
+
+}else{
+    //STATYSTYKI DANEGO PACZKOMATU W DANYM DNIU
+    String id=rightTextField1.getText();
+    ResultSet rs= dbUtil.dbExecuteQuery("CALL statystyki("+id+", '"+data+"');");
+
+    StringBuilder utarg = new StringBuilder();
+
+    while (rs.next()) {
+
+        Float w = rs.getFloat("wysłane");
+        Float o = rs.getFloat("odebrane");
+        utarg.append("Wysłane: "+w+"\n"+"Odebrane: "+o);
+
+    }
+
+    txtResult.setText(utarg.toString());
+
+
+
+}
     }
 
     @FXML
@@ -140,9 +211,35 @@ public class UserController {
         assert consoleTextArea != null : "fx:id=\"consoleTextArea\" was not injected: check your FXML file 'user.fxml'.";
         assert disconnectButton != null : "fx:id=\"disconnectButton\" was not injected: check your FXML file 'user.fxml'.";
         assert showAllButton != null : "fx:id=\"showAllButton\" was not injected: check your FXML file 'user.fxml'.";
+        assert statPane != null : "fx:id=\"statPane\" was not injected: check your FXML file 'user.fxml'.";
+        assert leftTextField1 != null : "fx:id=\"leftTextField1\" was not injected: check your FXML file 'user.fxml'.";
+        assert rightTextField1 != null : "fx:id=\"rightTextField1\" was not injected: check your FXML file 'user.fxml'.";
+        assert processButton1 != null : "fx:id=\"processButton1\" was not injected: check your FXML file 'user.fxml'.";
+        assert comboBox11 != null : "fx:id=\"comboBox11\" was not injected: check your FXML file 'user.fxml'.";
 
         dbUtil=LoginController.dbUtil;
         racketDAO=new PackageDAO(dbUtil, consoleTextArea);
+
+        isAdmin=dbUtil.getUserName().contains("admin");
+
+        if(isAdmin){
+            sendPane.setVisible(false);
+            statPane.setVisible(true);
+
+            leftTextField1.setPromptText("data YYYY-MM-DD");
+            leftTextField1.setDisable(false);
+            rightTextField1.setPromptText("id przesyłkomatu");
+            rightTextField1.setDisable(false);
+            txtResult.setVisible(true);
+            txtResult.setPromptText("data -> utarg \t\t\t" +
+                    "data i id -> statystyki");
+        }else{
+            statPane.setVisible(false);
+            sendPane.setVisible(true);
+            rightTextField1.setPromptText("id przesyłkomatu");
+        }
+
+
     }
 
 }
