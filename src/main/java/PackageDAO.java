@@ -39,26 +39,6 @@ public class PackageDAO {
     }
 
 
-    public ObservableList<Package> searchPackages(String manuf) throws SQLException, ClassNotFoundException {
-
-        String selectStmt = "SELECT * FROM Packages WHERE manufacturer LIKE '%" + manuf + "%';";
-
-        try {
-
-            ResultSet resultSet = dbUtil.dbExecuteQuery(selectStmt);
-
-            ObservableList<Package> Packages = getPackageList(resultSet);
-
-            consoleTextArea.appendText(selectStmt + "\n");
-
-            return Packages;
-
-        } catch (SQLException e) {
-            consoleTextArea.appendText("While searching a Package from '" + manuf + "' name, an error occurred. \n");
-            throw e;
-        }
-
-    }
 
     public ObservableList<Package> showAllOrders() throws SQLException, ClassNotFoundException {
 

@@ -22,7 +22,7 @@ public class LoginController {
 
 
     @FXML
-    private PasswordField userTextField;
+    private TextField userTextField;
 
     @FXML
     private PasswordField passwordTextField;
@@ -52,7 +52,7 @@ public class LoginController {
     private TextField registerPhoneNumberTextField;
 
     @FXML
-    private TextField registerPasswordTextField;
+    private PasswordField registerPasswordTextField;
 
     @FXML
     private Button confirmRegistrationButton;
@@ -73,7 +73,7 @@ public class LoginController {
             selectStmt="CREATE USER '"+registerPhoneNumberTextField.getText()+"'@'localhost' IDENTIFIED BY '"+registerPasswordTextField.getText()+"';";
             dbUtil.dbExecuteUpdate(selectStmt);
 
-            selectStmt="GRANT select on paczkex.zlecenia TO '"+registerPhoneNumberTextField.getText()+"'@'localhost';";
+            selectStmt="GRANT select on paczkex.* TO '"+registerPhoneNumberTextField.getText()+"'@'localhost';";
             dbUtil.dbExecuteUpdate(selectStmt);
 
             selectStmt="GRANT EXECUTE ON PROCEDURE paczkex.nadanie TO '"+registerPhoneNumberTextField.getText()+"'@'localhost';";
@@ -118,13 +118,13 @@ public class LoginController {
         racketDAO = new PackageDAO(dbUtil, consoleTextArea);
 
         dbUtil.dbConnect();
-
         consoleText.append("Access granted for user \"").append(userTextField.getText()).append("\".").append("\n");
-        consoleTextArea.setText(consoleText.toString());
 
         Stage stage = (Stage)((Node)event.getSource()).getScene().getWindow();
         Scene scene = new Scene(RacketApp.loadFXML("user"), 800, 600);
         stage.setScene(scene);
+
+
     }
 
 

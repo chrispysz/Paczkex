@@ -5,6 +5,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
 
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -39,10 +40,16 @@ public class UserController {
     private Button processButton;
 
     @FXML
-    private ComboBox<?> comboBox1;
+    private ComboBox<String> comboBox1;
 
     @FXML
-    private ComboBox<?> comboBox2;
+    private ComboBox<String> comboBox2;
+
+    @FXML
+    private ComboBox<String> sizeComboBox;
+
+    @FXML
+    private ComboBox<String> destinationComboBox;
 
     @FXML
     private TableView<Package> ordersTable;
@@ -105,70 +112,76 @@ public class UserController {
     private Button processButton1;
 
     @FXML
-    private ComboBox<?> comboBox11;
-
-    @FXML
     private TextArea txtResult;
 
     private DBUtil dbUtil;
     private PackageDAO racketDAO;
-    private boolean isAdmin=false;
+    private boolean isAdmin = false;
 
     @FXML
     void disconnectButtonPressed(ActionEvent event) throws IOException, SQLException {
         dbUtil.dbDisconnect();
-        Stage stage = (Stage)((Node)event.getSource()).getScene().getWindow();
+        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         Scene scene = new Scene(RacketApp.loadFXML("login"), 800, 600);
         stage.setScene(scene);
     }
 
     @FXML
-    void onProcessClick(ActionEvent event) {
-
+    void onProcessClick(ActionEvent event) throws SQLException, ClassNotFoundException {
+        try {
+            if (comboBox1.getValue().equals("Nadanie")) {
+                String nadanieStmt = "call nadanie('" + sizeComboBox.getValue() + "'" +
+                        ",'NADANA',null," + dbUtil.getUserName() + "," + leftTextField.getText() + ",1," + destinationComboBox.getValue().charAt(0) + ");";
+                dbUtil.dbExecuteUpdate(nadanieStmt);
+                consoleTextArea.appendText(nadanieStmt + "\n");
+            }
+        }catch (SQLException | ClassNotFoundException e){
+            consoleTextArea.appendText("Wystąpił błąd podczas nadawania paczki!\n");
+            throw e;
+        }
     }
 
     @FXML
     void onProcess1Click(ActionEvent event) throws SQLException, ClassNotFoundException {
 
-        String data=leftTextField1.getText();
+        String data = leftTextField1.getText();
 
-if(rightTextField1.getText().equals("")){
-    //UTARG W DANYM DNIU
-
-
-    ResultSet rs= dbUtil.dbExecuteQuery("select utarg('"+data+"') as utarg;");
-
-    StringBuilder utarg = new StringBuilder();
-
-    while (rs.next()) {
-
-        Float n = rs.getFloat("utarg");
-        utarg.append(n);
-
-    }
-
-    txtResult.setText(utarg.toString()+"zł");
-
-}else{
-    //STATYSTYKI DANEGO PACZKOMATU W DANYM DNIU
-    String id=rightTextField1.getText();
-    ResultSet rs= dbUtil.dbExecuteQuery("CALL statystyki("+id+", '"+data+"');");
-
-    StringBuilder utarg = new StringBuilder();
-
-    while (rs.next()) {
-
-        Float w = rs.getFloat("wysłane");
-        Float o = rs.getFloat("odebrane");
-        utarg.append("Wysłane: "+w+"\n"+"Odebrane: "+o);
-
-    }
-
-    txtResult.setText(utarg.toString());
+        if (rightTextField1.getText().equals("")) {
+            //UTARG W DANYM DNIU
 
 
+            ResultSet rs = dbUtil.dbExecuteQuery("select utarg('" + data + "') as utarg;");
 
-}
+            StringBuilder utarg = new StringBuilder();
+
+            while (rs.next()) {
+
+                Float n = rs.getFloat("utarg");
+                utarg.append(n);
+
+            }
+
+            txtResult.setText(utarg.toString() + "zł");
+
+        } else {
+            //STATYSTYKI DANEGO PACZKOMATU W DANYM DNIU
+            String id = rightTextField1.getText();
+            ResultSet rs = dbUtil.dbExecuteQuery("CALL statystyki(" + id + ", '" + data + "');");
+
+            StringBuilder utarg = new StringBuilder();
+
+            while (rs.next()) {
+
+                Float w = rs.getFloat("wysłane");
+                Float o = rs.getFloat("odebrane");
+                utarg.append("Wysłane: " + w + "\n" + "Odebrane: " + o);
+
+            }
+
+            txtResult.setText(utarg.toString());
+
+
+        }
     }
 
     @FXML
@@ -190,12 +203,14 @@ if(rightTextField1.getText().equals("")){
     }
 
     @FXML
-    void initialize() {
+    void initialize() throws SQLException, ClassNotFoundException {
         assert leftTextField != null : "fx:id=\"leftTextField\" was not injected: check your FXML file 'user.fxml'.";
         assert rightTextField != null : "fx:id=\"rightTextField\" was not injected: check your FXML file 'user.fxml'.";
         assert processButton != null : "fx:id=\"processButton\" was not injected: check your FXML file 'user.fxml'.";
         assert comboBox1 != null : "fx:id=\"comboBox1\" was not injected: check your FXML file 'user.fxml'.";
         assert comboBox2 != null : "fx:id=\"comboBox2\" was not injected: check your FXML file 'user.fxml'.";
+        assert sizeComboBox != null : "fx:id=\"sizeComboBox\" was not injected: check your FXML file 'user.fxml'.";
+        assert destinationComboBox != null : "fx:id=\"destinationComboBox\" was not injected: check your FXML file 'user.fxml'.";
         assert ordersTable != null : "fx:id=\"ordersTable\" was not injected: check your FXML file 'user.fxml'.";
         assert idCol != null : "fx:id=\"idCol\" was not injected: check your FXML file 'user.fxml'.";
         assert rozmiarCol != null : "fx:id=\"idCol\" was not injected: check your FXML file 'user.fxml'.";
@@ -215,14 +230,13 @@ if(rightTextField1.getText().equals("")){
         assert leftTextField1 != null : "fx:id=\"leftTextField1\" was not injected: check your FXML file 'user.fxml'.";
         assert rightTextField1 != null : "fx:id=\"rightTextField1\" was not injected: check your FXML file 'user.fxml'.";
         assert processButton1 != null : "fx:id=\"processButton1\" was not injected: check your FXML file 'user.fxml'.";
-        assert comboBox11 != null : "fx:id=\"comboBox11\" was not injected: check your FXML file 'user.fxml'.";
 
-        dbUtil=LoginController.dbUtil;
-        racketDAO=new PackageDAO(dbUtil, consoleTextArea);
+        dbUtil = LoginController.dbUtil;
+        racketDAO = new PackageDAO(dbUtil, consoleTextArea);
 
-        isAdmin=dbUtil.getUserName().contains("admin");
+        isAdmin = dbUtil.getUserName().contains("admin");
 
-        if(isAdmin){
+        if (isAdmin) {
             sendPane.setVisible(false);
             statPane.setVisible(true);
 
@@ -233,176 +247,55 @@ if(rightTextField1.getText().equals("")){
             txtResult.setVisible(true);
             txtResult.setPromptText("data -> utarg \t\t\t" +
                     "data i id -> statystyki");
-        }else{
+        } else {
             statPane.setVisible(false);
             sendPane.setVisible(true);
             rightTextField1.setPromptText("id przesyłkomatu");
         }
 
+        consoleTextArea.setText(LoginController.consoleText.toString());
+
+        ArrayList<String> nadOdbList=new ArrayList<>();
+        nadOdbList.add("Nadanie");
+        nadOdbList.add("Odbiór");
+        ArrayList<String> sizeList=new ArrayList<>();
+        sizeList.add("S");
+        sizeList.add("M");
+        sizeList.add("L");
+        sizeList.add("XL");
+
+        sizeComboBox.setItems(FXCollections.observableArrayList(sizeList));
+
+        comboBox1.setItems(FXCollections.observableArrayList(nadOdbList));
+        comboBox1.setValue("Nadanie");
+        comboBox1.valueProperty().addListener((obs, oldVal, newVal) -> {
+            System.out.println("Tryb: "+newVal);
+            if (newVal.equals("Nadanie")){
+                sizeComboBox.setVisible(true);
+                leftTextField.setVisible(true);
+                rightTextField.setVisible(true);
+                comboBox2.setVisible(false);
+                destinationComboBox.setVisible(true);
+            }
+            if (newVal.equals("Odbiór")){
+                leftTextField.setVisible(false);
+                rightTextField.setVisible(false);
+                comboBox2.setVisible(true);
+                sizeComboBox.setVisible(false);
+                destinationComboBox.setVisible(false);
+            }
+        });
+
+
+        ArrayList<String> paczkomatList=new ArrayList<>();
+        ResultSet rs = dbUtil.dbExecuteQuery("select * from paczkomaty;");
+        while (rs.next()) {
+            String paczkomat = rs.getString(1)+": "+rs.getString(2)+" "+
+                    rs.getString(3)+" "+rs.getString(4)+", "+rs.getString(5);
+            paczkomatList.add(paczkomat);
+        }
+        destinationComboBox.setItems(FXCollections.observableArrayList(paczkomatList));
 
     }
 
 }
-
-
-
-//import javafx.collections.ObservableList;
-//import javafx.event.ActionEvent;
-//import javafx.fxml.FXML;
-//import javafx.scene.Node;
-//import javafx.scene.Scene;
-//import javafx.scene.control.*;
-//import javafx.stage.Stage;
-//
-//import java.io.IOException;
-//import java.net.URL;
-//import java.sql.SQLException;
-//import java.util.ResourceBundle;
-//
-//public class UserController {
-//
-//    @FXML // ResourceBundle that was given to the FXMLLoader
-//    private ResourceBundle resources;
-//
-//    @FXML // URL location of the FXML file that was given to the FXMLLoader
-//    private URL location;
-//
-//    @FXML // fx:id="racketNameToAddTextField"
-//    private TextField racketNameToAddTextField; // Value injected by FXMLLoader
-//
-//    @FXML // fx:id="addRacketButton"
-//    private Button addRacketButton; // Value injected by FXMLLoader
-//
-//    @FXML // fx:id="selectRacketNameTextField"
-//    private TextField selectRacketNameTextField; // Value injected by FXMLLoader
-//
-//    @FXML // fx:id="selectRacketButton"
-//    private Button selectRacketButton; // Value injected by FXMLLoader
-//
-//    @FXML // fx:id="showRacketsButton"
-//    private Button showRacketsButton; // Value injected by FXMLLoader
-//
-//    @FXML // fx:id="racketTable"
-//    private TableView racketTable; // Value injected by FXMLLoader
-//
-//    @FXML
-//    private TextArea consoleTextArea;
-//
-//    @FXML
-//    private Button disconnectButton;
-//
-//    @FXML
-//    private TableColumn<Racket, String> nameCol;
-//
-//    @FXML
-//    private TableColumn<Racket, String> manufacturerCol;
-//
-//    @FXML
-//    private TableColumn<Racket, String> massCol;
-//
-//    @FXML
-//    private TableColumn<Racket, String> headSizeCol;
-//
-//    @FXML
-//    private TableColumn<Racket, String> dominantColorCol;
-//
-//    @FXML
-//    private TableColumn<Racket, String> priceUSDCol;
-//
-//    private DBUtil dbUtil;
-//    private RacketDAO racketDAO;
-//
-//    @FXML
-//    void disconnectButtonPressed(ActionEvent event) throws SQLException, IOException {
-//        dbUtil=LoginController.dbUtil;
-//        dbUtil.dbDisconnect();
-//        Stage stage = (Stage)((Node)event.getSource()).getScene().getWindow();
-//        Scene scene = new Scene(RacketApp.loadFXML("login"), 800, 600);
-//        stage.setScene(scene);
-//
-//    }
-//
-//    @FXML
-//    void addRacketButtonPressed(ActionEvent event) throws SQLException, ClassNotFoundException {
-//
-//        try {
-//
-//            if (!racketNameToAddTextField.getText().equals(null)) {
-//
-//                racketDAO.insertRacket(racketNameToAddTextField.getText());
-//                consoleTextArea.appendText("New package " + racketNameToAddTextField.getText() + " sent." + "\n");
-//
-//            }
-//        } catch (SQLException e) {
-//            consoleTextArea.appendText("Error occurred while sending package.\n");
-//            throw e;
-//        }
-//
-//    }
-//
-//
-//    @FXML
-//    void selectRacketButtonPressed(ActionEvent event) throws SQLException, ClassNotFoundException {
-//
-//        try {
-//
-//            if (!selectRacketNameTextField.getText().equals(null)) {
-//
-//                racketTable.getItems().clear();
-//                ObservableList<Racket> wineData = racketDAO.searchRackets(selectRacketNameTextField.getText());
-//                populateRackets(wineData);
-////
-//            }
-//        } catch (SQLException e) {
-//            consoleTextArea.appendText("Error occurred while getting wines from DB.\n");
-//            throw e;
-//        }
-//
-//    }
-//
-//    @FXML
-//    void showPackagesButtonPressed(ActionEvent event) throws SQLException, ClassNotFoundException {
-//
-//        try {
-//
-//            racketTable.getItems().clear();
-//            ObservableList<Racket> racketData = racketDAO.showAllRackets();
-//            populateRackets(racketData);
-//
-//        } catch (SQLException e) {
-//            consoleTextArea.appendText("Error occurred while getting packages from DB.\n");
-//            throw e;
-//        }
-//
-//    }
-//
-//    private void populateRackets(ObservableList<Racket> racketData) {
-//        racketTable.setItems(racketData);
-//    }
-//
-//    @FXML
-//        // This method is called by the FXMLLoader when initialization is complete
-//    void initialize() {
-//        assert consoleTextArea != null : "fx:id=\"consoleTextArea\" was not injected: check your FXML file 'user.fxml'.";
-//        assert racketNameToAddTextField != null : "fx:id=\"racketNameToAddTextField\" was not injected: check your FXML file 'user.fxml'.";
-//        assert addRacketButton != null : "fx:id=\"addRacketButton\" was not injected: check your FXML file 'user.fxml'.";
-//        assert selectRacketNameTextField != null : "fx:id=\"selectRacketNameTextField\" was not injected: check your FXML file 'user.fxml'.";
-//        assert selectRacketButton != null : "fx:id=\"selectRacketButton\" was not injected: check your FXML file 'user.fxml'.";
-//        assert showRacketsButton != null : "fx:id=\"showRacketsButton\" was not injected: check your FXML file 'user.fxml'.";
-//        assert racketTable != null : "fx:id=\"racketTable\" was not injected: check your FXML file 'user.fxml'.";
-//        assert disconnectButton != null : "fx:id=\"disconnectButton\" was not injected: check your FXML file 'user.fxml'.";
-//
-//        assert nameCol != null : "fx:id=\"nameCol\" was not injected: check your FXML file 'user.fxml'.";
-//        assert manufacturerCol != null : "fx:id=\"manufacturerCol\" was not injected: check your FXML file 'user.fxml'.";
-//        assert massCol != null : "fx:id=\"massCol\" was not injected: check your FXML file 'user.fxml'.";
-//        assert headSizeCol != null : "fx:id=\"headSizeCol\" was not injected: check your FXML file 'user.fxml'.";
-//        assert dominantColorCol != null : "fx:id=\"dominantColorCol\" was not injected: check your FXML file 'user.fxml'.";
-//        assert priceUSDCol != null : "fx:id=\"priceUSDCol\" was not injected: check your FXML file 'user.fxml'.";
-//
-//        consoleTextArea.setText(LoginController.consoleText.toString());
-//
-//
-//    }
-//
-//
-//}
