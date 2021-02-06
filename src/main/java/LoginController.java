@@ -82,9 +82,9 @@ public class LoginController {
             selectStmt="GRANT EXECUTE ON PROCEDURE paczkex.odbior TO '"+registerPhoneNumberTextField.getText()+"'@'localhost';";
             dbUtil.dbExecuteUpdate(selectStmt);
 
-            consoleTextArea.appendText("User created successfully!");
+            consoleTextArea.appendText("Z powodzeniem stworzono użytkownika!" + "\n");
 
-            consoleTextArea.appendText("Connection closed. Bye!" + "\n");
+            consoleTextArea.appendText("Wylogowałeś się. Miłego dnia!" + "\n");
 
         } catch (SQLException | ClassNotFoundException e) {
             consoleTextArea.appendText("While creating user an error occured. \n");
@@ -103,7 +103,7 @@ public class LoginController {
         dbUtil = new DBUtil("default_login_user", "1234", consoleTextArea);
         dbUtil.dbConnect();
 
-        consoleText.append("You can register!").append("\n");
+        consoleText.append("Możesz się zarejestrować!").append("\n");
         consoleTextArea.setText(consoleText.toString());
 
         connectButton.setDisable(true);
@@ -118,7 +118,7 @@ public class LoginController {
         racketDAO = new PackageDAO(dbUtil, consoleTextArea);
 
         dbUtil.dbConnect();
-        consoleText.append("Access granted for user \"").append(userTextField.getText()).append("\".").append("\n");
+        consoleText.append("Zalogowano użytkownika \"").append(dbUtil.getUserName()).append("\".").append("\n");
 
         Stage stage = (Stage)((Node)event.getSource()).getScene().getWindow();
         Scene scene = new Scene(RacketApp.loadFXML("user"), 800, 600);

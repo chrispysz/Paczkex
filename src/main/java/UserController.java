@@ -49,6 +49,9 @@ public class UserController {
     private ComboBox<String> sizeComboBox;
 
     @FXML
+    private ComboBox<String> sourceComboBox;
+
+    @FXML
     private ComboBox<String> destinationComboBox;
 
     @FXML
@@ -128,21 +131,24 @@ public class UserController {
 
     @FXML
     void onProcessClick(ActionEvent event) throws SQLException, ClassNotFoundException {
-        //TODO: Implementacja wyboru paczkomatu, w którym aktualnie się znajdujemy(z którego ndajaemy/odbieramy)
         try {
             if (comboBox1.getValue().equals("Nadanie")) {
+                String[] sourceArray = sourceComboBox.getValue().split(": ");
+                String[] destinationArray = destinationComboBox.getValue().split(": ");
                 String nadanieStmt = "call nadanie('" + sizeComboBox.getValue() + "'" +
-                        ",'NADANA',null," + dbUtil.getUserName() + "," + leftTextField.getText() + ",1," + destinationComboBox.getValue().charAt(0) + ");";
+                        ",'NADANA',null," + dbUtil.getUserName() + "," + leftTextField.getText() + "" +
+                        ","+sourceArray[0]+"," + destinationArray[0] + ");";
                 dbUtil.dbExecuteUpdate(nadanieStmt);
-                consoleTextArea.appendText(nadanieStmt + "\n");
+                System.out.println(nadanieStmt);
+                consoleTextArea.appendText("Z powodzeniem nadano paczkę!" + "\n");
             }
             if (comboBox1.getValue().equals("Odbiór")) {
                 String odbiorStmt = "call odbior("+comboBox2.getValue()+","+dbUtil.getUserName()+");";
                 dbUtil.dbExecuteUpdate(odbiorStmt);
-                consoleTextArea.appendText(odbiorStmt + "\n");
+                consoleTextArea.appendText("Z powodzeniem odebrano paczkę o id: " +comboBox2.getValue()+ "\n");
             }
 
-            updateComboBoxes();
+            updatePackagesComboBox();
             
         }catch (SQLException | ClassNotFoundException e){
             consoleTextArea.appendText("Wystąpił błąd podczas przetwarzania paczki! Upewnij się," +
@@ -196,20 +202,19 @@ public class UserController {
 
     @FXML
     void showAllButtonPressed(ActionEvent event) throws SQLException, ClassNotFoundException {
-        //TODO: Wyświetlanie paczek związanych z użytkownikiem (wyświetla wszystkie)
         try {
 
             ordersTable.getItems().clear();
-            ObservableList<Package> packageData = packageDAO.showAllOrders();
-            populateRackets(packageData);
+            ObservableList<Package> packageData = packageDAO.showAllOrders(dbUtil.getUserName());
+            populateOrders(packageData);
 
         } catch (SQLException | ClassNotFoundException e) {
-            consoleTextArea.appendText("Error occurred while getting packages from DB.\n");
+            consoleTextArea.appendText("Wystąpił błąd podczas wyświetlania paczek.\n");
             throw e;
         }
     }
 
-    private void populateRackets(ObservableList<Package> packageData) {
+    private void populateOrders(ObservableList<Package> packageData) {
         ordersTable.setItems(packageData);
     }
 
@@ -222,6 +227,7 @@ public class UserController {
         assert comboBox2 != null : "fx:id=\"comboBox2\" was not injected: check your FXML file 'user.fxml'.";
         assert sizeComboBox != null : "fx:id=\"sizeComboBox\" was not injected: check your FXML file 'user.fxml'.";
         assert destinationComboBox != null : "fx:id=\"destinationComboBox\" was not injected: check your FXML file 'user.fxml'.";
+        assert sourceComboBox != null : "fx:id=\"sourceComboBox\" was not injected: check your FXML file 'user.fxml'.";
         assert ordersTable != null : "fx:id=\"ordersTable\" was not injected: check your FXML file 'user.fxml'.";
         assert idCol != null : "fx:id=\"idCol\" was not injected: check your FXML file 'user.fxml'.";
         assert rozmiarCol != null : "fx:id=\"idCol\" was not injected: check your FXML file 'user.fxml'.";
@@ -280,7 +286,6 @@ public class UserController {
         comboBox1.setItems(FXCollections.observableArrayList(nadOdbList));
         comboBox1.setValue("Nadanie");
         comboBox1.valueProperty().addListener((obs, oldVal, newVal) -> {
-            System.out.println("Tryb: "+newVal);
             if (newVal.equals("Nadanie")){
                 sizeComboBox.setVisible(true);
                 leftTextField.setVisible(true);
@@ -297,35 +302,63 @@ public class UserController {
             }
         });
 
+        sourceComboBox.valueProperty().addListener((obs, oldVal, newVal) -> {
+            if (!newVal.equals("Wybierz lokację")){
+                try {
+                comboBox2.setDisable(false);
+                processButton.setDisable(false);
+                updatePackagesComboBox();
+                } catch (SQLException | ClassNotFoundException e) {
+                    consoleTextArea.appendText("Wystąpił błąd podczas wyświetlania paczek.\n");
+                    e.printStackTrace();
+                }
 
-        updateComboBoxes();
+
+            }
+        });
+
+
+
+        updateSourceAndDestinationComboBoxes();
         
         
 
     }
 
-    private void updateComboBoxes() throws SQLException, ClassNotFoundException {
-        
-        destinationComboBox.getItems().clear();
-        comboBox2.getItems().clear();
-        
-        ArrayList<String> paczkomatList=new ArrayList<>();
-        ResultSet rs = dbUtil.dbExecuteQuery("select * from paczkomaty;");
-        while (rs.next()) {
-            String paczkomat = rs.getString(1)+": "+rs.getString(2)+" "+
-                    rs.getString(3)+" "+rs.getString(4)+", "+rs.getString(5);
-            paczkomatList.add(paczkomat);
-        }
-        destinationComboBox.setItems(FXCollections.observableArrayList(paczkomatList));
+    private void updatePackagesComboBox() throws SQLException, ClassNotFoundException {
 
-        //TODO: Tu mają się wyświetlać tylko paczki znajdujące się w aktualnym paczkomacie
-        ArrayList<String> paczkiList=new ArrayList<>();
-        rs = dbUtil.dbExecuteQuery("select * from paczki where id_odbiorcy="+dbUtil.getUserName()+";");
+        ArrayList<String> paczkiList = new ArrayList<>();
+        String[] properPaczka = sourceComboBox.getValue().split(": ");
+        String querystTest="select * from paczki join zlecenia on zlecenia.ID=paczki.id_paczki" +
+                " where id_odbiorcy=" + dbUtil.getUserName() + " and " +
+                "stan_paczki='NADANA' and " +
+                "concat(zlecenia.ulica,' ',zlecenia.nr,' ',zlecenia.miasto,' ',zlecenia.kraj) = '" + properPaczka[1] + "';";
+        ResultSet rs = dbUtil.dbExecuteQuery(querystTest);
         while (rs.next()) {
             String paczka = rs.getString(1);
             paczkiList.add(paczka);
         }
         comboBox2.setItems(FXCollections.observableArrayList(paczkiList));
+    }
+
+    private void updateSourceAndDestinationComboBoxes() throws SQLException, ClassNotFoundException {
+        
+        destinationComboBox.getItems().clear();
+        sourceComboBox.getItems().clear();
+        
+        ArrayList<String> paczkomatList=new ArrayList<>();
+        ResultSet rs = dbUtil.dbExecuteQuery("select * from paczkomaty;");
+        while (rs.next()) {
+            String paczkomat = rs.getString(1)+": "+rs.getString(2)+" "+
+                    rs.getString(3)+" "+rs.getString(4)+" "+rs.getString(5);
+            paczkomatList.add(paczkomat);
+        }
+        destinationComboBox.setItems(FXCollections.observableArrayList(paczkomatList));
+        sourceComboBox.setItems(FXCollections.observableArrayList(paczkomatList));
+
+
+
+
     }
 
 }

@@ -40,45 +40,31 @@ public class PackageDAO {
 
 
 
-    public ObservableList<Package> showAllOrders() throws SQLException, ClassNotFoundException {
+    public ObservableList<Package> showAllOrders(String id) throws SQLException, ClassNotFoundException {
 
-        String selectStmt = "SELECT * FROM zlecenia;";
+        String selectStmt = "SELECT * FROM zlecenia " +
+                "join paczki on zlecenia.ID=paczki.id_paczki "+
+                "join klienci nadawcy on nadawcy.id_klienta = paczki.id_nadawcy " +
+                "join klienci odbiorcy on odbiorcy.id_klienta = paczki.id_odbiorcy " +
+                "where nadawcy.id_klienta="+id+" or odbiorcy.id_klienta="+id+";";
 
         try {
 
             ResultSet resultSet = dbUtil.dbExecuteQuery(selectStmt);
 
             ObservableList<Package> PackageList = getPackageList(resultSet);
-            consoleTextArea.appendText(selectStmt+"\n");
+            consoleTextArea.appendText("Wyświetlono Twoje paczki!"+"\n");
 
             return PackageList;
 
 
         } catch (SQLException e) {
-            consoleTextArea.appendText("While searching Packages, an error occurred. \n");
+            consoleTextArea.appendText("W czasie wczytywanie listy paczek wystąpił błąd! \n");
             throw e;
         }
 
     }
 
-    public void insertPackage(String name) throws SQLException, ClassNotFoundException {
-
-        StringBuilder sb = new StringBuilder("INSERT INTO Packages(model) VALUES('");
-        sb.append(name);
-        sb.append("');");
-        String insertStmt = sb.toString();
-
-        try {
-
-            dbUtil.dbExecuteUpdate(insertStmt);
-            consoleTextArea.appendText(insertStmt + "\n");
-
-        } catch (SQLException e) {
-            consoleTextArea.appendText("Error occurred while INSERT Operation.");
-            throw e;
-        }
-
-    }
 
 
 }
