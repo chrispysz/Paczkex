@@ -115,7 +115,7 @@ public class UserController {
     private TextArea txtResult;
 
     private DBUtil dbUtil;
-    private PackageDAO racketDAO;
+    private PackageDAO packageDAO;
     private boolean isAdmin = false;
 
     @FXML
@@ -128,6 +128,7 @@ public class UserController {
 
     @FXML
     void onProcessClick(ActionEvent event) throws SQLException, ClassNotFoundException {
+        //TODO: Implementacja wyboru paczkomatu, w którym aktualnie się znajdujemy(z którego ndajaemy/odbieramy)
         try {
             if (comboBox1.getValue().equals("Nadanie")) {
                 String nadanieStmt = "call nadanie('" + sizeComboBox.getValue() + "'" +
@@ -135,8 +136,17 @@ public class UserController {
                 dbUtil.dbExecuteUpdate(nadanieStmt);
                 consoleTextArea.appendText(nadanieStmt + "\n");
             }
+            if (comboBox1.getValue().equals("Odbiór")) {
+                String odbiorStmt = "call odbior(2,"+comboBox2.getValue()+");";
+                dbUtil.dbExecuteUpdate(odbiorStmt);
+                consoleTextArea.appendText(odbiorStmt + "\n");
+            }
+
+            updateComboBoxes();
+            
         }catch (SQLException | ClassNotFoundException e){
-            consoleTextArea.appendText("Wystąpił błąd podczas nadawania paczki!\n");
+            consoleTextArea.appendText("Wystąpił błąd podczas przetwarzania paczki! Upewnij się," +
+                    " że wszystkie pola są odpowiednio uzupełnione.\n");
             throw e;
         }
     }
@@ -186,11 +196,12 @@ public class UserController {
 
     @FXML
     void showAllButtonPressed(ActionEvent event) throws SQLException, ClassNotFoundException {
+        //TODO: Wyświetlanie paczek związanych z użytkownikiem (wyświetla wszystkie)
         try {
 
             ordersTable.getItems().clear();
-            ObservableList<Package> racketData = racketDAO.showAllOrders();
-            populateRackets(racketData);
+            ObservableList<Package> packageData = packageDAO.showAllOrders();
+            populateRackets(packageData);
 
         } catch (SQLException | ClassNotFoundException e) {
             consoleTextArea.appendText("Error occurred while getting packages from DB.\n");
@@ -198,8 +209,8 @@ public class UserController {
         }
     }
 
-    private void populateRackets(ObservableList<Package> racketData) {
-        ordersTable.setItems(racketData);
+    private void populateRackets(ObservableList<Package> packageData) {
+        ordersTable.setItems(packageData);
     }
 
     @FXML
@@ -232,7 +243,7 @@ public class UserController {
         assert processButton1 != null : "fx:id=\"processButton1\" was not injected: check your FXML file 'user.fxml'.";
 
         dbUtil = LoginController.dbUtil;
-        racketDAO = new PackageDAO(dbUtil, consoleTextArea);
+        packageDAO = new PackageDAO(dbUtil, consoleTextArea);
 
         isAdmin = dbUtil.getUserName().contains("admin");
 
@@ -287,6 +298,17 @@ public class UserController {
         });
 
 
+        updateComboBoxes();
+        
+        
+
+    }
+
+    private void updateComboBoxes() throws SQLException, ClassNotFoundException {
+        
+        destinationComboBox.getItems().clear();
+        comboBox2.getItems().clear();
+        
         ArrayList<String> paczkomatList=new ArrayList<>();
         ResultSet rs = dbUtil.dbExecuteQuery("select * from paczkomaty;");
         while (rs.next()) {
@@ -296,6 +318,14 @@ public class UserController {
         }
         destinationComboBox.setItems(FXCollections.observableArrayList(paczkomatList));
 
+        //TODO: Tu mają się wyświetlać tylko paczki znajdujące się w aktualnym paczkomacie
+        ArrayList<String> paczkiList=new ArrayList<>();
+        rs = dbUtil.dbExecuteQuery("select * from paczki where id_odbiorcy="+dbUtil.getUserName()+";");
+        while (rs.next()) {
+            String paczka = rs.getString(1);
+            paczkiList.add(paczka);
+        }
+        comboBox2.setItems(FXCollections.observableArrayList(paczkiList));
     }
 
 }
