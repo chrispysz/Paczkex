@@ -137,7 +137,7 @@ public class UserController {
                 consoleTextArea.appendText(nadanieStmt + "\n");
             }
             if (comboBox1.getValue().equals("Odbiór")) {
-                String odbiorStmt = "call odbior(2,"+comboBox2.getValue()+");";
+                String odbiorStmt = "call odbior("+comboBox2.getValue()+","+dbUtil.getUserName()+");";
                 dbUtil.dbExecuteUpdate(odbiorStmt);
                 consoleTextArea.appendText(odbiorStmt + "\n");
             }
