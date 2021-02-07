@@ -1,6 +1,7 @@
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.TextArea;
+
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -39,21 +40,20 @@ public class PackageDAO {
     }
 
 
-
     public ObservableList<Package> showAllOrders(String id) throws SQLException, ClassNotFoundException {
 
         String selectStmt = "SELECT * FROM zlecenia " +
-                "join paczki on zlecenia.ID=paczki.id_paczki "+
+                "join paczki on zlecenia.ID=paczki.id_paczki " +
                 "join klienci nadawcy on nadawcy.id_klienta = paczki.id_nadawcy " +
                 "join klienci odbiorcy on odbiorcy.id_klienta = paczki.id_odbiorcy " +
-                "where nadawcy.id_klienta="+id+" or odbiorcy.id_klienta="+id+";";
+                "where nadawcy.id_klienta=" + id + " or odbiorcy.id_klienta=" + id + ";";
 
         try {
 
             ResultSet resultSet = dbUtil.dbExecuteQuery(selectStmt);
 
             ObservableList<Package> PackageList = getPackageList(resultSet);
-            consoleTextArea.appendText("Wyświetlono Twoje paczki!"+"\n");
+            consoleTextArea.appendText("Wyświetlono Twoje paczki!" + "\n");
 
             return PackageList;
 
@@ -64,7 +64,6 @@ public class PackageDAO {
         }
 
     }
-
 
 
 }

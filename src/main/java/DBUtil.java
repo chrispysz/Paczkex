@@ -1,4 +1,5 @@
 import javafx.scene.control.TextArea;
+
 import java.sql.*;
 import javax.sql.rowset.CachedRowSet;
 
@@ -104,7 +105,7 @@ public class DBUtil {
     }
 
 
-    public  void dbExecuteUpdate(String sqlStmt) throws SQLException, ClassNotFoundException {
+    public void dbExecuteUpdate(String sqlStmt) throws SQLException, ClassNotFoundException {
 
         Statement stmt = null;
         try {

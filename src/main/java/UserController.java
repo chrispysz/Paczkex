@@ -137,24 +137,24 @@ public class UserController {
                 String[] destinationArray = destinationComboBox.getValue().split(": ");
                 String nadanieStmt = "call nadanie('" + sizeComboBox.getValue() + "'" +
                         ",'NADANA',null," + dbUtil.getUserName() + "," + leftTextField.getText() + "" +
-                        ","+sourceArray[0]+"," + destinationArray[0] + ");";
+                        "," + sourceArray[0] + "," + destinationArray[0] + ");";
                 dbUtil.dbExecuteUpdate(nadanieStmt);
                 System.out.println(nadanieStmt);
                 consoleTextArea.appendText("Z powodzeniem nadano paczkę!" + "\n");
             }
             if (comboBox1.getValue().equals("Odbiór")) {
-                String odbiorStmt = "call odbior("+comboBox2.getValue()+","+dbUtil.getUserName()+");";
+                String odbiorStmt = "call odbior(" + comboBox2.getValue() + "," + dbUtil.getUserName() + ");";
                 dbUtil.dbExecuteUpdate(odbiorStmt);
-                consoleTextArea.appendText("Z powodzeniem odebrano paczkę o id: " +comboBox2.getValue()+ "\n");
+                consoleTextArea.appendText("Z powodzeniem odebrano paczkę o id: " + comboBox2.getValue() + "\n");
             }
 
             updatePackagesComboBox();
-            
-        }catch (SQLException | ClassNotFoundException e){
+
+        } catch (SQLException | ClassNotFoundException e) {
             if (e.getMessage().equals("Brak dostępnych skrytek w docelowym automacie")
                     ||
                     e.getMessage().equals("Brak dostępnych skrytek w źródłowym automacie")) {
-                consoleTextArea.appendText(e.getMessage()+"\n");
+                consoleTextArea.appendText(e.getMessage() + "\n");
             } else {
                 consoleTextArea.appendText("Wystąpił błąd podczas przetwarzania paczki! Upewnij się," +
                         " że wszystkie pola są odpowiednio uzupełnione.\n");
@@ -276,12 +276,12 @@ public class UserController {
             rightTextField1.setPromptText("id przesyłkomatu");
         }
 
-        consoleTextArea.setText(LoginController.consoleText.toString());
+        consoleTextArea.appendText("Zalogowano użytkownika "+dbUtil.getUserName()+"\n");
 
-        ArrayList<String> nadOdbList=new ArrayList<>();
+        ArrayList<String> nadOdbList = new ArrayList<>();
         nadOdbList.add("Nadanie");
         nadOdbList.add("Odbiór");
-        ArrayList<String> sizeList=new ArrayList<>();
+        ArrayList<String> sizeList = new ArrayList<>();
         sizeList.add("S");
         sizeList.add("M");
         sizeList.add("L");
@@ -292,14 +292,14 @@ public class UserController {
         comboBox1.setItems(FXCollections.observableArrayList(nadOdbList));
         comboBox1.setValue("Nadanie");
         comboBox1.valueProperty().addListener((obs, oldVal, newVal) -> {
-            if (newVal.equals("Nadanie")){
+            if (newVal.equals("Nadanie")) {
                 sizeComboBox.setVisible(true);
                 leftTextField.setVisible(true);
                 rightTextField.setVisible(true);
                 comboBox2.setVisible(false);
                 destinationComboBox.setVisible(true);
             }
-            if (newVal.equals("Odbiór")){
+            if (newVal.equals("Odbiór")) {
                 leftTextField.setVisible(false);
                 rightTextField.setVisible(false);
                 comboBox2.setVisible(true);
@@ -309,11 +309,11 @@ public class UserController {
         });
 
         sourceComboBox.valueProperty().addListener((obs, oldVal, newVal) -> {
-            if (!newVal.equals("Wybierz lokację")){
+            if (!newVal.equals("Wybierz lokację")) {
                 try {
-                comboBox2.setDisable(false);
-                processButton.setDisable(false);
-                updatePackagesComboBox();
+                    comboBox2.setDisable(false);
+                    processButton.setDisable(false);
+                    updatePackagesComboBox();
                 } catch (SQLException | ClassNotFoundException e) {
                     consoleTextArea.appendText("Wystąpił błąd podczas wyświetlania paczek.\n");
                     e.printStackTrace();
@@ -324,10 +324,8 @@ public class UserController {
         });
 
 
-
         updateSourceAndDestinationComboBoxes();
-        
-        
+
 
     }
 
@@ -335,7 +333,7 @@ public class UserController {
 
         ArrayList<String> paczkiList = new ArrayList<>();
         String[] properPaczka = sourceComboBox.getValue().split(": ");
-        String querystTest="select * from paczki join zlecenia on zlecenia.ID=paczki.id_paczki" +
+        String querystTest = "select * from paczki join zlecenia on zlecenia.ID=paczki.id_paczki" +
                 " where id_odbiorcy=" + dbUtil.getUserName() + " and " +
                 "stan_paczki='NADANA' and " +
                 "concat(zlecenia.ulica,' ',zlecenia.nr,' ',zlecenia.miasto,' ',zlecenia.kraj) = '" + properPaczka[1] + "';";
@@ -348,21 +346,19 @@ public class UserController {
     }
 
     private void updateSourceAndDestinationComboBoxes() throws SQLException, ClassNotFoundException {
-        
+
         destinationComboBox.getItems().clear();
         sourceComboBox.getItems().clear();
-        
-        ArrayList<String> paczkomatList=new ArrayList<>();
+
+        ArrayList<String> paczkomatList = new ArrayList<>();
         ResultSet rs = dbUtil.dbExecuteQuery("select * from paczkomaty;");
         while (rs.next()) {
-            String paczkomat = rs.getString(1)+": "+rs.getString(2)+" "+
-                    rs.getString(3)+" "+rs.getString(4)+" "+rs.getString(5);
+            String paczkomat = rs.getString(1) + ": " + rs.getString(2) + " " +
+                    rs.getString(3) + " " + rs.getString(4) + " " + rs.getString(5);
             paczkomatList.add(paczkomat);
         }
         destinationComboBox.setItems(FXCollections.observableArrayList(paczkomatList));
         sourceComboBox.setItems(FXCollections.observableArrayList(paczkomatList));
-
-
 
 
     }

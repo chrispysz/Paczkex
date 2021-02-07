@@ -7,6 +7,8 @@
 <?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
@@ -33,7 +35,7 @@
                 </VBox>
             </children>
         </AnchorPane>
-      <AnchorPane fx:id="registerPane" prefHeight="200.0" prefWidth="200.0" visible="false">
+      <AnchorPane fx:id="registerPane" prefHeight="200.0" prefWidth="200.0">
          <children>
             <Text layoutX="216.0" layoutY="40.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Rejestracja">
                <font>
@@ -75,6 +77,12 @@
                </children>
             </VBox>
             <Button fx:id="confirmRegistrationButton" layoutX="329.0" layoutY="286.0" mnemonicParsing="false" onAction="#confirmRegistrationPressed" text="ZAREJESTRUJ SIĘ!" />
+            <Button fx:id="returnFromRegistrationButton" layoutX="451.0" layoutY="559.0" mnemonicParsing="false" onAction="#onRetFromRegClick" prefHeight="26.0" prefWidth="90.0" text="WRÓĆ" />
+            <ImageView fx:id="loginImageView" fitHeight="600.0" fitWidth="600.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@package.jpg" />
+               </image>
+            </ImageView>
          </children>
       </AnchorPane>
     </items>
