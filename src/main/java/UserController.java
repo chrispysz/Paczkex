@@ -151,8 +151,14 @@ public class UserController {
             updatePackagesComboBox();
             
         }catch (SQLException | ClassNotFoundException e){
-            consoleTextArea.appendText("Wystąpił błąd podczas przetwarzania paczki! Upewnij się," +
-                    " że wszystkie pola są odpowiednio uzupełnione.\n");
+            if (e.getMessage().equals("Brak dostępnych skrytek w docelowym automacie")
+                    ||
+                    e.getMessage().equals("Brak dostępnych skrytek w źródłowym automacie")) {
+                consoleTextArea.appendText(e.getMessage()+"\n");
+            } else {
+                consoleTextArea.appendText("Wystąpił błąd podczas przetwarzania paczki! Upewnij się," +
+                        " że wszystkie pola są odpowiednio uzupełnione.\n");
+            }
             throw e;
         }
     }
