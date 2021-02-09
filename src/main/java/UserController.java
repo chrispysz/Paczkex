@@ -211,7 +211,7 @@ public class UserController {
         try {
 
             ordersTable.getItems().clear();
-            ObservableList<Package> packageData = packageDAO.showAllOrders(dbUtil.getUserName());
+            ObservableList<Package> packageData = packageDAO.showAllOrders(dbUtil.getUserName(), isAdmin);
             populateOrders(packageData);
 
         } catch (SQLException | ClassNotFoundException e) {

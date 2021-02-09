@@ -40,13 +40,19 @@ public class PackageDAO {
     }
 
 
-    public ObservableList<Package> showAllOrders(String id) throws SQLException, ClassNotFoundException {
+    public ObservableList<Package> showAllOrders(String id, boolean isAdmin) throws SQLException, ClassNotFoundException {
 
-        String selectStmt = "SELECT * FROM zlecenia " +
-                "join paczki on zlecenia.ID=paczki.id_paczki " +
-                "join klienci nadawcy on nadawcy.id_klienta = paczki.id_nadawcy " +
-                "join klienci odbiorcy on odbiorcy.id_klienta = paczki.id_odbiorcy " +
-                "where nadawcy.id_klienta=" + id + " or odbiorcy.id_klienta=" + id + ";";
+        String selectStmt;
+        if (isAdmin) {
+            selectStmt = "SELECT * FROM zlecenia;";
+        } else {
+
+            selectStmt = "SELECT * FROM zlecenia " +
+                    "join paczki on zlecenia.ID=paczki.id_paczki " +
+                    "join klienci nadawcy on nadawcy.id_klienta = paczki.id_nadawcy " +
+                    "join klienci odbiorcy on odbiorcy.id_klienta = paczki.id_odbiorcy " +
+                    "where nadawcy.id_klienta=" + id + " or odbiorcy.id_klienta=" + id + ";";
+        }
 
         try {
 
