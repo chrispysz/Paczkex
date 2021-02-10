@@ -1,5 +1,6 @@
 import java.io.IOException;
 import java.net.URL;
+import java.security.NoSuchAlgorithmException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ResourceBundle;
@@ -18,6 +19,9 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 
+/**
+ * Controller class of the login/registration screen.
+ */
 public class LoginController {
 
 
@@ -68,6 +72,10 @@ public class LoginController {
     public static StringBuilder consoleText = new StringBuilder();
 
 
+    /**
+     * Processes return from registration button click.
+     * @param event Click event.
+     */
     @FXML
     void onRetFromRegClick(ActionEvent event) {
         registerButton.setDisable(false);
@@ -75,8 +83,16 @@ public class LoginController {
         loginImageView.setVisible(true);
     }
 
+    /**
+     * Processes confirm registration button click. Creates a basic user with basic privileges and inserts his data into
+     * the appropriate "clients" table in the database.
+     * @param event Click event.
+     * @throws SQLException When an unspecified MySQL error occurred.
+     * @throws ClassNotFoundException When JDBC driver was not found.
+     * @throws NoSuchAlgorithmException When an error with hashing occurred.
+     */
     @FXML
-    void confirmRegistrationPressed(ActionEvent event) throws SQLException, ClassNotFoundException {
+    void confirmRegistrationPressed(ActionEvent event) throws SQLException, ClassNotFoundException, NoSuchAlgorithmException {
 
         if (inputsAreValid()) {
 
@@ -85,7 +101,7 @@ public class LoginController {
                         " ('" + registerNameTextField.getText() + "','" + registerSurnameTextField.getText() + "','" + registerEmailTextField.getText() + "','" + registerPhoneNumberTextField.getText() + "');";
                 dbUtil.dbExecuteUpdate(selectStmt);
 
-                selectStmt = "CREATE USER '" + registerPhoneNumberTextField.getText() + "'@'localhost' IDENTIFIED BY '" + registerPasswordTextField.getText() + "';";
+                selectStmt = "CREATE USER '" + registerPhoneNumberTextField.getText() + "'@'localhost' IDENTIFIED BY '" + Hasher.hashMD5(registerPasswordTextField.getText()) + "';";
                 dbUtil.dbExecuteUpdate(selectStmt);
 
                 selectStmt = "GRANT select on paczkex.* TO '" + registerPhoneNumberTextField.getText() + "'@'localhost';";
@@ -100,7 +116,7 @@ public class LoginController {
                 consoleTextArea.appendText("Z powodzeniem stworzono użytkownika!" + "\n");
 
 
-            } catch (SQLException | ClassNotFoundException e) {
+            } catch (SQLException | ClassNotFoundException | NoSuchAlgorithmException e) {
                 consoleTextArea.appendText("While creating user an error occured. \n");
                 throw e;
             }
@@ -116,6 +132,10 @@ public class LoginController {
 
     }
 
+    /**
+     * Checks whether all the inputs are valid (are of appropriate length and do not contain illegal symbols).
+     * @return True/false (depending on whether the inputs were valid or not).
+     */
     private boolean inputsAreValid() {
 
         //check name and surname for illegal symbols and length
@@ -160,8 +180,16 @@ public class LoginController {
         return true;
     }
 
+    /**
+     * Processes begin registration button click. Logs in as a temporary "create new basic users only" - type user and sets
+     * up the appropriate view.
+     * @param event Click event.
+     * @throws SQLException When an unspecified MySQL error occurred.
+     * @throws ClassNotFoundException When JDBC driver was not found.
+     * @throws NoSuchAlgorithmException When an error with hashing occurred.
+     */
     @FXML
-    void registerButtonPressed(ActionEvent event) throws SQLException, ClassNotFoundException {
+    void registerButtonPressed(ActionEvent event) throws SQLException, ClassNotFoundException, NoSuchAlgorithmException {
         dbUtil = new DBUtil("default_login_user", "1234", consoleTextArea);
         dbUtil.dbConnect();
 
@@ -174,8 +202,16 @@ public class LoginController {
 
     }
 
+    /**
+     *
+     * @param event
+     * @throws SQLException When an unspecified MySQL error occurred.
+     * @throws ClassNotFoundException When JDBC driver was not found.
+     * @throws IOException When there was a problem with .fxml file.
+     * @throws NoSuchAlgorithmException When an error with hashing occurred.
+     */
     @FXML
-    void connectButtonPressed(ActionEvent event) throws SQLException, ClassNotFoundException, IOException, InterruptedException {
+    void connectButtonPressed(ActionEvent event) throws SQLException, ClassNotFoundException, IOException, NoSuchAlgorithmException {
         dbUtil = new DBUtil(userTextField.getText(), passwordTextField.getText(), consoleTextArea);
         dbUtil.dbConnect();
 
@@ -187,7 +223,9 @@ public class LoginController {
 
     }
 
-
+    /**
+     * Initializes the login/registration screen.
+     */
     @FXML
     void initialize() {
         assert userTextField != null : "fx:id=\"userTextField\" was not injected: check your FXML file 'login.fxml'.";

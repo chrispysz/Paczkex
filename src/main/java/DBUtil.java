@@ -1,9 +1,12 @@
 import javafx.scene.control.TextArea;
 
+import java.security.NoSuchAlgorithmException;
 import java.sql.*;
 import javax.sql.rowset.CachedRowSet;
 
-
+/**
+ * Class responsible for processing MySQL requests.
+ */
 public class DBUtil {
 
     private String userName;
@@ -12,9 +15,19 @@ public class DBUtil {
 
     private Connection conn = null;
 
-    public DBUtil(String userName, String userPassword, TextArea consoleTextArea) {
+    /**
+     * Primary constructor.
+     * @param userName Username of the user who's trying to log in.
+     * @param userPassword Password of the user trying to log in.
+     * @param consoleTextArea TextArea in which messages are going to be displayed
+     * @throws NoSuchAlgorithmException When an error with hashing occurred.
+     */
+    public DBUtil(String userName, String userPassword, TextArea consoleTextArea) throws NoSuchAlgorithmException {
         this.userName = userName;
-        this.userPassword = userPassword;
+        if (userName.equals("default_login_user"))
+            this.userPassword = userPassword;
+        else
+            this.userPassword = Hasher.hashMD5(userPassword);
         this.consoleTextArea = consoleTextArea;
     }
 
@@ -22,6 +35,11 @@ public class DBUtil {
         return userName;
     }
 
+    /**
+     * Establishes connection to the database.
+     * @throws SQLException When an unspecified MySQL error occurred.
+     * @throws ClassNotFoundException When JDBC driver was not found.
+     */
     public void dbConnect() throws SQLException, ClassNotFoundException {
 
         try {
@@ -42,6 +60,10 @@ public class DBUtil {
 
     }
 
+    /**
+     * Disconnects from the database.
+     * @throws SQLException When an unspecified MySQL error occurred.
+     */
     public void dbDisconnect() throws SQLException {
 
         try {
@@ -56,6 +78,10 @@ public class DBUtil {
         }
     }
 
+    /**
+     * Creates the URL used for connection to the database.
+     * @return URL used for connection to the database.
+     */
     private String createURL() {
 
         StringBuilder urlSB = new StringBuilder("jdbc:mysql://");
@@ -71,6 +97,13 @@ public class DBUtil {
         return urlSB.toString();
     }
 
+    /**
+     * Processes query requests.
+     * @param queryStmt MySQL statement to be processed.
+     * @return ResultSet of the query.
+     * @throws SQLException When an unspecified MySQL error occurred.
+     * @throws ClassNotFoundException When JDBC driver was not found.
+     */
     public ResultSet dbExecuteQuery(String queryStmt) throws SQLException, ClassNotFoundException {
 
         PreparedStatement stmt = null;
@@ -105,6 +138,12 @@ public class DBUtil {
     }
 
 
+    /**
+     * Processes update requests (insert, update etc.).
+     * @param sqlStmt MySQL statement to be processed.
+     * @throws SQLException When an unspecified MySQL error occurred.
+     * @throws ClassNotFoundException When JDBC driver was not found.
+     */
     public void dbExecuteUpdate(String sqlStmt) throws SQLException, ClassNotFoundException {
 
         Statement stmt = null;

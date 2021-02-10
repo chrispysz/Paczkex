@@ -22,6 +22,9 @@ import javafx.stage.Stage;
 
 import javax.sql.rowset.CachedRowSet;
 
+/**
+ * Controller of the main user screen.
+ */
 public class UserController {
 
     @FXML
@@ -121,6 +124,13 @@ public class UserController {
     private PackageDAO packageDAO;
     private boolean isAdmin = false;
 
+    /**
+     * Processes disconnect button click. Returns to login screen.
+     *
+     * @param event Click event.
+     * @throws IOException  When there was a problem with the .fxml file.
+     * @throws SQLException When an unspecified MySQL error occurred.
+     */
     @FXML
     void disconnectButtonPressed(ActionEvent event) throws IOException, SQLException {
         dbUtil.dbDisconnect();
@@ -129,6 +139,12 @@ public class UserController {
         stage.setScene(scene);
     }
 
+    /**
+     * Processes the main execute button click. Depending of user selection sends or collects the package.
+     * @param event Click event.
+     * @throws SQLException When an unspecified MySQL error occurred.
+     * @throws ClassNotFoundException When JDBC driver was not found.
+     */
     @FXML
     void onProcessClick(ActionEvent event) throws SQLException, ClassNotFoundException {
         try {
@@ -163,6 +179,12 @@ public class UserController {
         }
     }
 
+    /**
+     * Processes the main execute button click if user is an admin. Displays the statistics.
+     * @param event Click event.
+     * @throws SQLException When an unspecified MySQL error occurred.
+     * @throws ClassNotFoundException When JDBC driver was not found.
+     */
     @FXML
     void onProcess1Click(ActionEvent event) throws SQLException, ClassNotFoundException {
 
@@ -206,6 +228,13 @@ public class UserController {
         }
     }
 
+    /**
+     * Processes the "show packages" button click. Populates the main table. Displays all for admin and
+     * relevant to the user to other users.
+     * @param event Click event.
+     * @throws SQLException When an unspecified MySQL error occurred.
+     * @throws ClassNotFoundException When JDBC driver was not found.
+     */
     @FXML
     void showAllButtonPressed(ActionEvent event) throws SQLException, ClassNotFoundException {
         try {
@@ -220,10 +249,19 @@ public class UserController {
         }
     }
 
+    /**
+     * Populates the table.
+     * @param packageData Data to be used for display.
+     */
     private void populateOrders(ObservableList<Package> packageData) {
         ordersTable.setItems(packageData);
     }
 
+    /**
+     * Initializes the main user screen view. Sets up combo boxes.
+     * @throws SQLException When an unspecified MySQL error occurred.
+     * @throws ClassNotFoundException When JDBC driver was not found.
+     */
     @FXML
     void initialize() throws SQLException, ClassNotFoundException {
         assert leftTextField != null : "fx:id=\"leftTextField\" was not injected: check your FXML file 'user.fxml'.";
@@ -276,7 +314,7 @@ public class UserController {
             rightTextField1.setPromptText("id przesyłkomatu");
         }
 
-        consoleTextArea.appendText("Zalogowano użytkownika "+dbUtil.getUserName()+"\n");
+        consoleTextArea.appendText("Zalogowano użytkownika " + dbUtil.getUserName() + "\n");
 
         ArrayList<String> nadOdbList = new ArrayList<>();
         nadOdbList.add("Nadanie");
@@ -329,6 +367,11 @@ public class UserController {
 
     }
 
+    /**
+     * Updates the combo box used for selecting which package to collect (in the selected machine).
+     * @throws SQLException When an unspecified MySQL error occurred.
+     * @throws ClassNotFoundException When JDBC driver was not found.
+     */
     private void updatePackagesComboBox() throws SQLException, ClassNotFoundException {
 
         ArrayList<String> paczkiList = new ArrayList<>();
@@ -345,6 +388,11 @@ public class UserController {
         comboBox2.setItems(FXCollections.observableArrayList(paczkiList));
     }
 
+    /**
+     * Updates the combo boxes used to select the source and destination machines.
+     * @throws SQLException When an unspecified MySQL error occurred.
+     * @throws ClassNotFoundException When JDBC driver was not found.
+     */
     private void updateSourceAndDestinationComboBoxes() throws SQLException, ClassNotFoundException {
 
         destinationComboBox.getItems().clear();

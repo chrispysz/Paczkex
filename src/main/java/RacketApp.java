@@ -6,6 +6,9 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 
+/**
+ * Main class responsible for initializing JavaFX components and setting the scene from fxml.
+ */
 public class RacketApp extends Application {
 
     private static Scene scene;

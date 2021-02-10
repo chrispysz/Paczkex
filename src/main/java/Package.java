@@ -2,6 +2,9 @@ import javafx.beans.property.*;
 
 import java.sql.Date;
 
+/**
+ * Class representing a single package.
+ */
 public class Package {
 
     private IntegerProperty id;

@@ -5,16 +5,30 @@ import javafx.scene.control.TextArea;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+/**
+ * Class responsible for populating the table in user screen.
+ */
 public class PackageDAO {
 
     private DBUtil dbUtil;
     private TextArea consoleTextArea;
 
+    /**
+     * Main constructor.
+     * @param dbUtil Current user.
+     * @param consoleTextArea TextArea where messages are going to be displayed.
+     */
     public PackageDAO(DBUtil dbUtil, TextArea consoleTextArea) {
         this.dbUtil = dbUtil;
         this.consoleTextArea = consoleTextArea;
     }
 
+    /**
+     * Creates a new list of packages.
+     * @param rs Result of the MySQL query.
+     * @return Returns an easily-processable list of packages.
+     * @throws SQLException When an unspecified MySQL error occurred.
+     */
     private ObservableList<Package> getPackageList(ResultSet rs) throws SQLException {
 
         ObservableList<Package> PackageList = FXCollections.observableArrayList();
@@ -40,6 +54,14 @@ public class PackageDAO {
     }
 
 
+    /**
+     * Processes the MySQL query to display appropriate packages.
+     * @param id ID of the user whose packages are going to be displayed.
+     * @param isAdmin Whether the user is an admin and has access to all the packages or not.
+     * @return A finished list of packages.
+     * @throws SQLException When an unspecified MySQL error occurred.
+     * @throws ClassNotFoundException When JDBC driver was not found.
+     */
     public ObservableList<Package> showAllOrders(String id, boolean isAdmin) throws SQLException, ClassNotFoundException {
 
         String selectStmt;
